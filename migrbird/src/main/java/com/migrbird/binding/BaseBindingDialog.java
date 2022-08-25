@@ -1,4 +1,4 @@
-package com.migrbird.dev;
+package com.migrbird.binding;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.viewbinding.ViewBinding;
 import com.migrbird.utils.Utils;
@@ -17,8 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * 对话框基础类，构造的时候设置对话框的布局文件binding作为范型参数,主要处理dialog大小的问题。
- * 可以指定大小，也可以直接使用xml的设置。
+ * 对话框基础类，构造的时候设置对话框的布局文件binding作为范型参数,主要处理dialog大小的问题。 可以指定大小，也可以直接使用xml的设置。
  *
  * @param <T>
  */
@@ -47,7 +47,7 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
     }
 
     /**
-     * 根据根布局自适应大小，需要在外面包裹一层FrameLayout。 因为dialog在setContentView的时候会把我们自己定义的根布局强制设置成match_parent
+     * 根据根布局自适应大小，因为dialog在setContentView的时候会把我们自己定义的根布局强制设置成match_parent
      *
      * @param context
      */
@@ -69,7 +69,9 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
             Method method = clazz.getMethod("inflate", LayoutInflater.class);
             binding = (T) method.invoke(null, getLayoutInflater());
             View view = binding.getRoot();
-            setContentView(view);
+            FrameLayout frameLayout = new FrameLayout(getContext());
+            frameLayout.addView(view);
+            setContentView(frameLayout);
         } catch (Exception e) {
             e.printStackTrace();
         }

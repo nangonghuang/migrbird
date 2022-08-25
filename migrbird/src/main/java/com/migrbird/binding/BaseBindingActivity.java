@@ -1,4 +1,4 @@
-package com.migrbird.dev;
+package com.migrbird.binding;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

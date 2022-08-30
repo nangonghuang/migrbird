@@ -6,12 +6,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.viewbinding.ViewBinding;
+import com.migrbird.utils.KeyboardUtils;
 import com.migrbird.utils.Utils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +29,7 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
     protected T binding;
     private int initWidth;
     private int intHeight;
-    private float dimAmount = 0.1f;
+    private boolean touchCancelInputWindow;
 
     /**
      * 直接指定dialog的大小
@@ -98,6 +100,10 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
         setCanceledOnTouchOutside(false);
     }
 
+    public void setTouchCancelInputWindow(boolean touchCancelInputWindow) {
+        this.touchCancelInputWindow = touchCancelInputWindow;
+    }
+
     @Override
     public void show() {
         this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
@@ -111,4 +117,18 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
         binding.getRoot().setSystemUiVisibility(uiOptions);
         this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        if (touchCancelInputWindow) {
+            if (event.getX() < 0 || event.getY() < 0) {
+                KeyboardUtils.hideInputWindow(binding.getRoot());
+            }
+            if (event.getX() > binding.getRoot().getWidth() || event.getY() > binding.getRoot().getHeight()) {
+                KeyboardUtils.hideInputWindow(binding.getRoot());
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
 }

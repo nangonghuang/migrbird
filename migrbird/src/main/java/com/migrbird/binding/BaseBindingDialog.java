@@ -48,8 +48,13 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
         this.intHeight = heightInDp;
     }
 
+    public BaseBindingDialog(@NonNull Context context, int themeResId) {
+        super(context, themeResId);
+    }
+
     /**
-     * 根据根布局自适应大小，因为dialog在setContentView的时候会把我们自己定义的根布局强制设置成match_parent
+     * 根据根布局自适应大小，因为dialog在setContentView的时候会把我们自己定义的根布局强制设置成match_parent,
+     * 所以需要在布局文件额外包裹一层framelayout
      *
      * @param context
      */
@@ -71,9 +76,7 @@ public abstract class BaseBindingDialog<T extends ViewBinding> extends Dialog {
             Method method = clazz.getMethod("inflate", LayoutInflater.class);
             binding = (T) method.invoke(null, getLayoutInflater());
             View view = binding.getRoot();
-            FrameLayout frameLayout = new FrameLayout(getContext());
-            frameLayout.addView(view);
-            setContentView(frameLayout);
+            setContentView(view);
         } catch (Exception e) {
             e.printStackTrace();
         }
